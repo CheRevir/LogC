@@ -72,7 +72,7 @@ public class LogConfig {
         private String tag;
         private boolean isPrint = true;
         private int[] priority = {PRINTLN, VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT};
-        private String separator = " -> ";
+        private String separator = ": ";
         private boolean enableSave = false;
         private String logFileName = "log-"
                 + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault()).format(new Date())
@@ -83,7 +83,7 @@ public class LogConfig {
         }
 
         public String getTag() {
-            return TextUtils.isEmpty(tag) ? mContext.getPackageName() : tag;
+            return TextUtils.isEmpty(tag) ? "Tag" : tag;
         }
     }
 

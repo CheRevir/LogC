@@ -109,7 +109,7 @@ public class LogC {
             String value = format.format(msg);
             switch (priority) {
                 case LogConfig.PRINTLN:
-                    System.out.println(tag + ": " + value);
+                    System.out.println(tag + sConfig.getSeparator() + value);
                     break;
                 case LogConfig.VERBOSE:
                     Log.v(tag, value);
@@ -134,7 +134,7 @@ public class LogC {
                 if (sLogFile == null) {
                     throw new NullPointerException("no init");
                 }
-                sLogFile.add(tag + ": " + value);
+                sLogFile.add(tag + sConfig.getSeparator() + value);
             }
         }
     }
