@@ -12,7 +12,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LogConfig config = new LogConfig.Builder(this).build();
+        LogConfig config = new LogConfig.Builder(this).setEnableSave(true).build();
         LogC.init(config);
     }
 }

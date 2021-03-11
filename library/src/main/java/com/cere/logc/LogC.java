@@ -1,9 +1,13 @@
 package com.cere.logc;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.cere.logc.impl.GeneralPrintFormat;
+
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -11,80 +15,139 @@ import java.util.Arrays;
  */
 public class LogC {
     private static LogConfig sConfig;
+    private static LogFile sLogFile;
 
     public static void init(@NonNull LogConfig config) {
         sConfig = config;
+        if (config.enableSave()) {
+            sLogFile = new LogFile(config);
+        }
+    }
+
+    public static LogConfig getConfig() {
+        return sConfig;
     }
 
     public static void println(Object msg) {
-        println(LogConfig.PRINTLN, getStackTraceTag(), msg);
+        print(LogConfig.PRINTLN, msg, new GeneralPrintFormat());
+    }
+
+    public static void println(Object msg, @NonNull PrintFormat format) {
+        print(LogConfig.PRINTLN, msg, format);
     }
 
     public static void v(Object msg) {
-        println(LogConfig.VERBOSE, getStackTraceTag(), msg);
+        print(LogConfig.VERBOSE, msg, new GeneralPrintFormat());
+    }
+
+    public static void v(Object msg, @NonNull PrintFormat format) {
+        print(LogConfig.VERBOSE, msg, format);
     }
 
     public static void d(Object msg) {
-        println(LogConfig.DEBUG, getStackTraceTag(), msg);
+        print(LogConfig.DEBUG, msg, new GeneralPrintFormat());
+    }
+
+    public static void d(Object msg, @NonNull PrintFormat format) {
+        print(LogConfig.DEBUG, msg, format);
     }
 
     public static void i(Object msg) {
-        println(LogConfig.INFO, getStackTraceTag(), msg);
+        print(LogConfig.INFO, msg, new GeneralPrintFormat());
+    }
+
+    public static void i(Object msg, @NonNull PrintFormat format) {
+        print(LogConfig.INFO, msg, format);
     }
 
     public static void w(Object msg) {
-        println(LogConfig.WARN, getStackTraceTag(), msg);
+        print(LogConfig.WARN, msg, new GeneralPrintFormat());
+    }
+
+    public static void w(Object msg, @NonNull PrintFormat format) {
+        print(LogConfig.WARN, msg, format);
     }
 
     public static void e(Object msg) {
-        println(LogConfig.ERROR, getStackTraceTag(), msg);
+        print(LogConfig.ERROR, msg, new GeneralPrintFormat());
     }
 
-    public static void wft(Object msg) {
-        println(LogConfig.ASSERT, getStackTraceTag(), msg);
+    public static void e(Object msg, @NonNull PrintFormat format) {
+        print(LogConfig.ERROR, msg, format);
     }
 
-    private static String getStackTraceTag() {
+    public static void wtf(Object msg) {
+        print(LogConfig.ASSERT, msg, new GeneralPrintFormat());
+    }
+
+    public static void wtf(Object msg, @NonNull PrintFormat format) {
+        print(LogConfig.ASSERT, msg, format);
+    }
+
+    public static boolean deleteAllLog() {
         if (sConfig == null) {
             throw new NullPointerException("no init");
         }
-        StackTraceElement element = getStackTrace()[5];
-        return sConfig.getTag() + sConfig.getSeparator() + element;
+        String directory = sConfig.getLogDirectory();
+        if (!TextUtils.isEmpty(directory)) {
+            File file = new File(directory);
+            if (file.exists()) {
+                return file.delete();
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
-    private static StackTraceElement[] getStackTrace() {
-        return Thread.currentThread().getStackTrace();
-    }
-
-    private static void println(int priority, String tag, Object msg) {
+    private static void print(int priority, Object msg, PrintFormat format) {
         if (sConfig == null) {
             throw new NullPointerException("no init");
         }
         if (sConfig.isPrint() && contains(priority)) {
+            String tag = getStackTraceTag(6);
+            String value = format.format(msg);
             switch (priority) {
                 case LogConfig.PRINTLN:
-                    System.out.println(msg);
+                    System.out.println(tag + ": " + value);
                     break;
                 case LogConfig.VERBOSE:
-                    Log.v(tag, msg.toString());
+                    Log.v(tag, value);
                     break;
                 case LogConfig.DEBUG:
-                    Log.d(tag, msg.toString());
+                    Log.d(tag, value);
                     break;
                 case LogConfig.INFO:
-                    Log.i(tag, msg.toString());
+                    Log.i(tag, value);
                     break;
                 case LogConfig.WARN:
-                    Log.w(tag, msg.toString());
+                    Log.w(tag, value);
                     break;
                 case LogConfig.ERROR:
-                    Log.e(tag, msg.toString());
+                    Log.e(tag, value);
                     break;
                 case LogConfig.ASSERT:
-                    Log.wtf(tag, msg.toString());
+                    Log.wtf(tag, value);
                     break;
             }
+            if (sConfig.enableSave()) {
+                if (sLogFile == null) {
+                    throw new NullPointerException("no init");
+                }
+                sLogFile.add(tag + ": " + value);
+            }
         }
+    }
+
+    @NonNull
+    private static String getStackTraceTag(int index) {
+        StackTraceElement element = getStackTrace()[index];
+        return sConfig.getTag() + sConfig.getSeparator() + element;
+    }
+
+    @NonNull
+    private static StackTraceElement[] getStackTrace() {
+        return Thread.currentThread().getStackTrace();
     }
 
     private static boolean contains(int priority) {

@@ -1,2 +1,2 @@
 # LogC
-Android日志工具
+Android日志工具。
