@@ -1,6 +1,7 @@
 package com.cere.logc.impl;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cere.logc.PrintFormat;
 
@@ -26,7 +27,10 @@ public class JsonPrintFormat implements PrintFormat {
 
     @NonNull
     @Override
-    public String format(@NonNull Object msg) {
+    public String format(@Nullable Object msg) {
+        if (msg == null) {
+            return "null";
+        }
         String value = msg.toString();
         try {
             if (value.startsWith("{")) {

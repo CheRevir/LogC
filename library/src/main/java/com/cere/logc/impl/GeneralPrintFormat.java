@@ -1,6 +1,7 @@
 package com.cere.logc.impl;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cere.logc.PrintFormat;
 
@@ -10,7 +11,10 @@ import com.cere.logc.PrintFormat;
 public class GeneralPrintFormat implements PrintFormat {
     @NonNull
     @Override
-    public String format(@NonNull Object msg) {
+    public String format(@Nullable Object msg) {
+        if (msg == null) {
+            return "null";
+        }
         return msg.toString();
     }
 }
