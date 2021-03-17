@@ -105,8 +105,8 @@ public class LogC {
             throw new NullPointerException("no init");
         }
         if (sConfig.isPrint() && contains(priority)) {
-            String tag = getStackTraceTag(6);
-            String value = format.format(msg);
+            String tag = sConfig.getTag();
+            String value = getStackTrace(6) + sConfig.getSeparator() + format.format(msg);
             switch (priority) {
                 case LogConfig.PRINTLN:
                     System.out.println(tag + sConfig.getSeparator() + value);
@@ -140,13 +140,13 @@ public class LogC {
     }
 
     @NonNull
-    private static String getStackTraceTag(int index) {
-        StackTraceElement element = getStackTrace()[index];
-        return sConfig.getTag() + sConfig.getSeparator() + element;
+    private static String getStackTrace(int index) {
+        StackTraceElement element = getStackTraces()[index];
+        return element.toString();
     }
 
     @NonNull
-    private static StackTraceElement[] getStackTrace() {
+    private static StackTraceElement[] getStackTraces() {
         return Thread.currentThread().getStackTrace();
     }
 

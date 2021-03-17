@@ -7,13 +7,37 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.cere.logc.LogC;
 import com.cere.logc.impl.JsonPrintFormat;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class MainActivity extends AppCompatActivity {
+    private ExecutorService mExecutorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        p();
+        mExecutorService = Executors.newSingleThreadExecutor();
+        for (int i = 0; i < 10; i++) {
+            mExecutorService.submit(() -> {
+                LogC.e(this);
+            });
+        }
+        //p();
+        //LogC.e("b");
+       /* new Thread(()->{
+            for (int i = 0; i < 1000; i++) {
+                LogC.e(i);
+                LogC.e(i);
+                LogC.e(i);
+                LogC.e(i);
+                LogC.e(i);
+                LogC.e(i);
+                LogC.e(i);
+                LogC.e(i);
+            }
+        }).start();*/
+        // p();
     }
 
     private void p() {
