@@ -105,7 +105,7 @@ public class LogC {
             throw new NullPointerException("no init");
         }
         if (sConfig.isPrint() && contains(priority)) {
-            String tag = sConfig.getTag();
+            String tag = format.getTag(sConfig);
             String value = getStackTrace(6) + sConfig.getSeparator() + format.format(msg);
             switch (priority) {
                 case LogConfig.PRINTLN:

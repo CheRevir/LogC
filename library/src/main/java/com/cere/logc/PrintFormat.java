@@ -8,5 +8,10 @@ import androidx.annotation.Nullable;
  */
 public interface PrintFormat {
     @NonNull
+    default String getTag(@NonNull LogConfig config) {
+        return config.getTag();
+    }
+
+    @NonNull
     String format(@Nullable Object msg);
 }
